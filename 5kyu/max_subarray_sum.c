@@ -1,5 +1,4 @@
 #include <stddef.h>
-#include <stdio.h>
 
 /*
   This challenge is really neat actually. Basically you have to find a chunk where 
@@ -54,7 +53,7 @@ int brute_force_maxSequence(const int* array, size_t n) {
   we get back into the positive numbers
 
 
-  The code in this block can probably be shrunk a little
+  The code in this block can probably be shrunk a little ( see `maxSequence_v2()` )
   bit but at this stage it works at least
 */
 int maxSequence(const int* array, size_t n) {
@@ -86,8 +85,40 @@ int maxSequence(const int* array, size_t n) {
   return highest_num;
 }
 
+/*
+  This version is based off of the `maxSequence()` function above but removes the second for loop
+  If we hard to report the position and length of the set we used to get the largest sum then the 
+  second for loop might make sense, but if we don't then having just wastes time and memory
+*/
+int maxSequence_v2(const int* array, size_t n) {
+  int highest_num = 0;
+  int current_counting_num = 0;
+  
+  for (int ndx = 0; ndx < (int)n; ndx++) {
+    // Adding a negative number to 0 will not help us find the largest number
+    // So if the number is negative and we're already at 0 then we can skip
+    // this spot in the array and move on without wasting time
+    if ((current_counting_num == 0) && (array[ndx] <= 0)) 
+      continue;
+    
+    current_counting_num += array[ndx];
+
+    if (current_counting_num > highest_num) {
+      highest_num = current_counting_num;
+    }
+
+    // Having a negative number means we don't have the largest possible. Lets set
+    // it back to 0 so that one of the two conditions to skip meaningless iterations are met
+    if (current_counting_num < 0) {
+      current_counting_num = 0;
+    }
+  }
+
+  return highest_num;
+}
+
 int main(void) {
-  printf("%d", 0 - 2);
+  // I don't have any prints here because I was using GDB to check the variables we got at the end
   int highest_num = maxSequence((int[]){-2, 1, -3, 4, -1, 2, 1, -5, 4}, 9);
   return 0;
 }
